@@ -1,5 +1,6 @@
-# This script uses jq to format json and prepare it for BigQuery manual table creation through jsonl data
-# If everything goes well BigQuery should auto-detect the schema and save you some time
+# This script uses jq to format json and prepare it for BigQuery manual table creation through JSONL data
+# If successful, BigQuery should auto-detect the schema
+# To manually create a table with multiple rows, upload your files to Storage and import in bulk using *
 
 import os
 import time
@@ -39,11 +40,10 @@ with open(contractsFilePathJson) as f:
 # send a request to Etherscan API with each smart contract address
 for address in content:
     count += 1
-    # print(str(count))
     if (count - 1) % 5 == 0:
         print('{0} addresses scraped - sleep 1 second'.format(count - 1) + '\n')
         time.sleep(1)
-    # print(address['address'])
+
     # form and send request to Etherscan API
     with urlopen('https://api.etherscan.io/api?module=contract&action=getsourcecode&address='
                  + address['address'] + '&apikey=' + apiKey, timeout=5) as response:
@@ -54,8 +54,6 @@ for address in content:
 
     # load json response
     jload = json.loads(data)
-    # print(type(jload))
-    # APIresultKey = jload['result']
 
     # scrape the Contract Name and create 3 files with it appending the .sol, .json, and .jsonl extensions
     for code in jload['result']:
@@ -86,6 +84,7 @@ for address in content:
         # convert json to jsonl
         path = targetDirPath + contract_name + '_' + address['address'] + jsonE
         newContractName = contract_name + '_' + address['address'] + jsonlE
+        # The JQ command is used
         os.system("bash -c 'cat " + path + " | jq -c '.[]' > " + targetDirPath + newContractName + "'")
         print(contract_name + '_' + address['address'] + ' written as ' + jsonlE + '\n')
 print("Smart contracts scraped = {0}".format(count - 1))

@@ -1,4 +1,9 @@
 # scrapeth
 # Scrape Ethereum smart contracts (including source code) through the Etherscan API.
 
-Uses a list of addresses stored in a local JSON file. The output is stored locally in 3 files with the extensions: .sol, .json, and .jsonl. The output JSON file is converted into JSONL with the help of the JQ command. The JSONL file can be used in a BigQuery import with auto-detect schema.
+Uses as input a list of addresses stored in a JSON file. The output is written to three files with the extensions: **.sol, .json, and .jsonl**  
+The output JSON file is converted into JSONL with the help of the **JQ** command:  
+```sudo apt install jq```  
+
+With JSONL data you could do a manual table creation in **BigQuery**. If successful, BigQuery should auto-detect the schema.
+To manually create a table with multiple rows, upload your files to Storage and import in bulk using *
